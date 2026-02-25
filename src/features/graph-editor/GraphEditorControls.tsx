@@ -49,10 +49,10 @@ export function GraphEditorControls({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-slate-950/70 p-3 text-xs text-slate-200">
+    <div className="flex h-full min-h-0 flex-col gap-3 overflow-y-auto bg-slate-950/70 p-3 text-xs text-slate-200">
       <h3 className="mb-2 text-sm font-semibold">Graph/Tree Controls</h3>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
           <span className="text-slate-400">Mode</span>
           <select
@@ -65,7 +65,7 @@ export function GraphEditorControls({
           </select>
         </label>
 
-        <label className="flex items-center gap-2 pt-5">
+        <label className="flex items-center gap-2 sm:pt-5">
           <input
             type="checkbox"
             checked={directedEdges}
@@ -75,11 +75,11 @@ export function GraphEditorControls({
         </label>
       </div>
 
-      <p className="mt-3 rounded bg-slate-900 px-2 py-1 text-slate-400">
+      <p className="rounded bg-slate-900 px-2 py-1 text-slate-400">
         Click empty canvas space to add a node. Click a node to select it.
       </p>
 
-      <div className="mt-3 space-y-2 rounded border border-slate-700 p-2">
+      <div className="space-y-2 rounded border border-slate-700 p-2">
         <p className="font-medium">Selected Node</p>
         <select
           className="w-full rounded bg-slate-800 px-2 py-1"
@@ -120,7 +120,7 @@ export function GraphEditorControls({
         </button>
       </div>
 
-      <div className="mt-3 space-y-2 rounded border border-slate-700 p-2">
+      <div className="space-y-2 rounded border border-slate-700 p-2">
         <p className="font-medium">Add Edge</p>
         <select
           className="w-full rounded bg-slate-800 px-2 py-1"
@@ -159,7 +159,7 @@ export function GraphEditorControls({
       </div>
 
       {mode === 'tree' ? (
-        <div className="mt-3 space-y-2 rounded border border-slate-700 p-2">
+        <div className="space-y-2 rounded border border-slate-700 p-2">
           <p className="font-medium">Tree Root</p>
           <select
             className="w-full rounded bg-slate-800 px-2 py-1"
@@ -176,7 +176,7 @@ export function GraphEditorControls({
         </div>
       ) : null}
 
-      <div className="mt-3 min-h-0 flex-1 overflow-auto rounded border border-slate-700 p-2">
+      <div className="h-56 overflow-auto rounded border border-slate-700 p-2">
         <p className="mb-2 font-medium">Edges ({edges.length})</p>
         <div className="space-y-1">
           {edges.map((edge) => {
@@ -185,15 +185,15 @@ export function GraphEditorControls({
             return (
               <div
                 key={edge.id}
-                className="flex items-center justify-between rounded bg-slate-800 px-2 py-1"
+                className="grid grid-cols-[1fr_auto] items-start gap-2 rounded bg-slate-800 px-2 py-1.5"
               >
-                <span>
+                <span className="break-words pr-1 leading-5">
                   {sourceLabel ?? edge.source} {directedEdges ? '→' : '—'}{' '}
                   {targetLabel ?? edge.target}
                 </span>
                 <button
                   type="button"
-                  className="text-rose-300"
+                  className="rounded px-1 text-rose-300 hover:bg-slate-700"
                   onClick={() => onDeleteEdge(edge.id)}
                 >
                   Delete
@@ -209,7 +209,7 @@ export function GraphEditorControls({
 
       <button
         type="button"
-        className="mt-3 rounded bg-slate-700 px-2 py-1 font-medium"
+        className="rounded bg-slate-700 px-2 py-1 font-medium"
         onClick={onResetGraph}
       >
         Reset demo graph

@@ -49,8 +49,8 @@ export function GraphEditorPanel({
         </h2>
       </div>
 
-      <div className="flex min-h-0 flex-1 gap-3">
-        <div className="flex w-[22rem] max-w-[44%] min-w-[19rem] flex-col rounded-md border border-slate-800 bg-slate-950/60">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 2xl:flex-row">
+        <div className="flex w-full min-h-[22rem] flex-col rounded-md border border-slate-800 bg-slate-950/60 2xl:w-[26rem] 2xl:max-w-[48%] 2xl:min-w-[22rem]">
           <div className="min-h-0 flex-1">
             <GraphEditorControls
               mode={state.mode}
@@ -158,7 +158,7 @@ export function GraphEditorPanel({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 p-3">
+        <div className="min-h-[20rem] flex-1 p-3">
           <GraphCanvasView
             nodes={state.nodes}
             edges={state.edges}
