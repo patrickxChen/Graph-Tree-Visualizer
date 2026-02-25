@@ -1,4 +1,5 @@
-import Editor from '@monaco-editor/react'
+import Editor, { type OnMount } from '@monaco-editor/react'
+import { useEffect, useRef } from 'react'
 import type { RuntimeBridgeState } from '../features/runtime-bridge'
 
 type SelectOption = {
@@ -47,6 +48,47 @@ export function CodeEditorPanel({
   onTimeLimitChange,
 }: CodeEditorPanelProps) {
   const isRunning = runtimeState.status === 'running'
+  const editorRef = useRef<Parameters<OnMount>[0] | null>(null)
+  const monacoRef = useRef<Parameters<OnMount>[1] | null>(null)
+  const decorationIdsRef = useRef<string[]>([])
+
+  useEffect(() => {
+    if (!editorRef.current || !monacoRef.current) {
+      return
+    }
+
+    const lineMatch = runtimeState.error?.match(/<anonymous>:(\d+):(\d+)/)
+    const runtimeLine = lineMatch ? Number(lineMatch[1]) - 1 : undefined
+
+    if (!runtimeLine || runtimeLine < 1) {
+      decorationIdsRef.current = editorRef.current.deltaDecorations(
+        decorationIdsRef.current,
+        [],
+      )
+      return
+    }
+
+    decorationIdsRef.current = editorRef.current.deltaDecorations(
+      decorationIdsRef.current,
+      [
+        {
+          range: new monacoRef.current.Range(runtimeLine, 1, runtimeLine, 1),
+          options: {
+            isWholeLine: true,
+            className: 'runtime-error-line',
+            glyphMarginClassName: 'runtime-error-glyph',
+            glyphMarginHoverMessage: [{ value: 'Runtime error reported here' }],
+          },
+        },
+      ],
+    )
+  }, [runtimeState.error])
+
+  const handleEditorMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor
+    monacoRef.current = monaco
+    editor.updateOptions({ glyphMargin: true })
+  }
 
   return (
     <section className="flex h-full min-h-0 flex-col">
@@ -146,6 +188,7 @@ export function CodeEditorPanel({
           height="100%"
           defaultLanguage="javascript"
           value={code}
+          onMount={handleEditorMount}
           onChange={(value) => onCodeChange(value ?? '')}
           theme="vs-dark"
           options={{

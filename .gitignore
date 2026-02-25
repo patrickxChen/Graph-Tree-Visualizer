@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 memory_bank/
+playwright-report
+test-results
 
 # Editor directories and files
 .vscode/*

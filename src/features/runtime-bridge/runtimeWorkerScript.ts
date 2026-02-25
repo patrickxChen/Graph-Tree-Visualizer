@@ -169,9 +169,14 @@ self.onmessage = async (messageEvent) => {
     );
     self.postMessage({ type: 'completed' });
   } catch (error) {
+    const formattedError =
+      error instanceof Error
+        ? [error.message, error.stack].filter(Boolean).join('\n')
+        : String(error);
+
     self.postMessage({
       type: 'error',
-      error: error instanceof Error ? error.message : String(error),
+      error: formattedError,
     });
   }
 };

@@ -1,7 +1,7 @@
 import { useReducer } from 'react'
 import type { RuntimeBridgeState, RuntimeEvent, RuntimeStatus } from './types'
 
-type RuntimeTimelineAction =
+export type RuntimeTimelineAction =
   | { type: 'setStatus'; status: RuntimeStatus }
   | { type: 'appendEvent'; event: RuntimeEvent }
   | { type: 'setError'; error?: string }
@@ -10,13 +10,13 @@ type RuntimeTimelineAction =
   | { type: 'markEnded'; endedAt: number }
   | { type: 'reset' }
 
-const initialRuntimeBridgeState: RuntimeBridgeState = {
+export const initialRuntimeBridgeState: RuntimeBridgeState = {
   status: 'idle',
   events: [],
   timeLimitMs: 3000,
 }
 
-function reducer(
+export function runtimeTimelineReducer(
   state: RuntimeBridgeState,
   action: RuntimeTimelineAction,
 ): RuntimeBridgeState {
@@ -63,7 +63,10 @@ function reducer(
 }
 
 export function useRuntimeTimelineStore() {
-  const [state, dispatch] = useReducer(reducer, initialRuntimeBridgeState)
+  const [state, dispatch] = useReducer(
+    runtimeTimelineReducer,
+    initialRuntimeBridgeState,
+  )
 
   return {
     state,
