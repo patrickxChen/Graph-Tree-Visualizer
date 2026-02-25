@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
 import { CodeEditorPanel } from './components/CodeEditorPanel'
-import { GraphEditorPanel } from './features/graph-editor'
+import { GraphEditorPanel, useGraphEditorState } from './features/graph-editor'
+import { useRuntimeBridge } from './features/runtime-bridge'
 import { WorkspaceLayout } from './components/WorkspaceLayout'
 
 function App() {
   const [algorithmCode, setAlgorithmCode] = useState('')
+  const graphEditor = useGraphEditorState()
+  const runtimeBridge = useRuntimeBridge()
 
   const defaultCode = useMemo(
     () => `function dfs(node, graph, visited = new Set()) {
@@ -21,15 +24,31 @@ dfs(graph.getRoot(), graph);`,
     [],
   )
 
+  const resolvedCode = algorithmCode || defaultCode
+
+  const handleRun = () => {
+    runtimeBridge.execute({
+      code: resolvedCode,
+      graph: graphEditor.state,
+    })
+  }
+
   return (
     <WorkspaceLayout
       leftPane={
         <CodeEditorPanel
-          code={algorithmCode || defaultCode}
+          code={resolvedCode}
           onCodeChange={setAlgorithmCode}
+          runtimeState={runtimeBridge.state}
+          onRun={handleRun}
+          onStop={runtimeBridge.stop}
+          onResetTimeline={runtimeBridge.resetTimeline}
+          onTimeLimitChange={runtimeBridge.setTimeLimitMs}
         />
       }
-      rightPane={<GraphEditorPanel />}
+      rightPane={
+        <GraphEditorPanel state={graphEditor.state} actions={graphEditor.actions} />
+      }
     />
   )
 }

@@ -1,10 +1,16 @@
 import { GraphCanvasView } from './GraphCanvasView'
 import { GraphEditorControls } from './GraphEditorControls'
-import { useGraphEditorState } from './useGraphEditorState'
+import type {
+  GraphEditorActions,
+  UseGraphEditorStateResult,
+} from './useGraphEditorState'
 
-export function GraphEditorPanel() {
-  const { state, actions } = useGraphEditorState()
+type GraphEditorPanelProps = {
+  state: UseGraphEditorStateResult['state']
+  actions: GraphEditorActions
+}
 
+export function GraphEditorPanel({ state, actions }: GraphEditorPanelProps) {
   return (
     <section className="flex h-full min-h-0 flex-col">
       <div className="border-b border-slate-700 px-3 py-2">

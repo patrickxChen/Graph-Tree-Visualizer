@@ -17,7 +17,7 @@ const createId = (prefix: string) => {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}`
 }
 
-const defaultState: GraphEditorState = {
+export const defaultGraphEditorState: GraphEditorState = {
   mode: 'graph',
   directedEdges: false,
   nodes: [
@@ -30,27 +30,46 @@ const defaultState: GraphEditorState = {
 
 const reviveState = (): GraphEditorState => {
   if (typeof window === 'undefined') {
-    return defaultState
+    return defaultGraphEditorState
   }
 
   const raw = window.localStorage.getItem(STORAGE_KEY)
   if (!raw) {
-    return defaultState
+    return defaultGraphEditorState
   }
 
   try {
     const parsed = JSON.parse(raw) as PersistedGraphEditorState
     return {
-      ...defaultState,
+      ...defaultGraphEditorState,
       ...parsed,
       selectedNodeId: parsed.nodes[0]?.id,
     }
   } catch {
-    return defaultState
+    return defaultGraphEditorState
   }
 }
 
-export function useGraphEditorState() {
+export type GraphEditorActions = {
+  setMode: (mode: GraphMode) => void
+  setDirectedEdges: (directed: boolean) => void
+  addNode: (x: number, y: number) => void
+  selectNode: (nodeId?: string) => void
+  updateNodeLabel: (nodeId: string, label: string) => void
+  deleteNode: (nodeId: string) => void
+  addEdge: (source: string, target: string) => void
+  deleteEdge: (edgeId: string) => void
+  setRootNodeId: (rootNodeId?: string) => void
+  resetGraph: () => void
+}
+
+export type UseGraphEditorStateResult = {
+  state: GraphEditorState
+  selectedNode: EditorNode | undefined
+  actions: GraphEditorActions
+}
+
+export function useGraphEditorState(): UseGraphEditorStateResult {
   const [state, setState] = useState<GraphEditorState>(() => reviveState())
 
   useEffect(() => {
@@ -191,7 +210,7 @@ export function useGraphEditorState() {
   }
 
   const resetGraph = () => {
-    setState(defaultState)
+    setState(defaultGraphEditorState)
   }
 
   return {
