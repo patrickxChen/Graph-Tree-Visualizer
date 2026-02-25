@@ -11,6 +11,7 @@ type CodeEditorPanelProps = {
   code: string
   onCodeChange: (value: string) => void
   runtimeState: RuntimeBridgeState
+  onLoadDemo: () => void
   templateOptions: SelectOption[]
   selectedTemplateId: string
   onTemplateChange: (templateId: string) => void
@@ -36,6 +37,7 @@ export function CodeEditorPanel({
   code,
   onCodeChange,
   runtimeState,
+  onLoadDemo,
   templateOptions,
   selectedTemplateId,
   onTemplateChange,
@@ -160,6 +162,14 @@ export function CodeEditorPanel({
             disabled={!isRunning}
           >
             Cancel
+          </button>
+
+          <button
+            type="button"
+            className="rounded bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100"
+            onClick={onLoadDemo}
+          >
+            Load Demo
           </button>
 
           <button

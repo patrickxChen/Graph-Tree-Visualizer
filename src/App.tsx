@@ -7,6 +7,8 @@ import { useRuntimeBridge } from './features/runtime-bridge'
 import { WorkspaceLayout } from './components/WorkspaceLayout'
 
 function App() {
+  const defaultTemplateId = 'dfs'
+  const defaultPresetId = 'undirected-small'
   const [selectedTemplateId, setSelectedTemplateId] = useState('dfs')
   const [selectedPresetId, setSelectedPresetId] = useState('undirected-small')
   const [algorithmCode, setAlgorithmCode] = useState(
@@ -66,6 +68,24 @@ function App() {
     runtimeBridge.resetPlayback()
   }
 
+  const handleLoadDemo = () => {
+    const demoTemplate = algorithmTemplates.find(
+      (item) => item.id === defaultTemplateId,
+    )
+    const demoPreset = graphPresets.find((item) => item.id === defaultPresetId)
+
+    if (!demoTemplate || !demoPreset) {
+      return
+    }
+
+    setSelectedTemplateId(defaultTemplateId)
+    setSelectedPresetId(defaultPresetId)
+    setAlgorithmCode(demoTemplate.code)
+    graphEditor.actions.loadGraph(demoPreset.graph)
+    runtimeBridge.resetTimeline()
+    runtimeBridge.resetPlayback()
+  }
+
   const inspectorState = useMemo(() => {
     let highlightedNodeId: string | undefined
     let highlightedEdge: { sourceId: string; targetId: string } | undefined
@@ -120,6 +140,7 @@ function App() {
           code={resolvedCode}
           onCodeChange={setAlgorithmCode}
           runtimeState={runtimeBridge.state}
+          onLoadDemo={handleLoadDemo}
           templateOptions={templateOptions}
           selectedTemplateId={selectedTemplateId}
           onTemplateChange={handleTemplateChange}
