@@ -7,7 +7,8 @@ import type {
   PersistedGraphEditorState,
 } from './types'
 
-const STORAGE_KEY = 'algovisuals.graph-editor.v1'
+const STORAGE_KEY = 'algolize.graph-editor.v1'
+const LEGACY_STORAGE_KEY = 'algovisuals.graph-editor.v1'
 
 const createId = (prefix: string) => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -33,7 +34,9 @@ const reviveState = (): GraphEditorState => {
     return defaultGraphEditorState
   }
 
-  const raw = window.localStorage.getItem(STORAGE_KEY)
+  const raw =
+    window.localStorage.getItem(STORAGE_KEY) ??
+    window.localStorage.getItem(LEGACY_STORAGE_KEY)
   if (!raw) {
     return defaultGraphEditorState
   }
