@@ -92,16 +92,16 @@ export function CodeEditorPanel({
 
   return (
     <section className="flex h-full min-h-0 flex-col">
-      <div className="flex items-center justify-between border-b border-slate-700 px-3 py-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-700 px-3 py-3">
         <h2 className="text-xs font-medium uppercase tracking-wide text-slate-300">
           Algorithm Editor
         </h2>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <label className="flex items-center gap-1 text-xs text-slate-400">
             Template
             <select
-              className="max-w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
+              className="w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
               value={selectedTemplateId}
               onChange={(event) => onTemplateChange(event.target.value)}
             >
@@ -116,7 +116,7 @@ export function CodeEditorPanel({
           <label className="flex items-center gap-1 text-xs text-slate-400">
             Preset
             <select
-              className="max-w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
+              className="w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
               value={selectedPresetId}
               onChange={(event) => onPresetChange(event.target.value)}
             >
@@ -135,7 +135,7 @@ export function CodeEditorPanel({
               min={500}
               max={20000}
               step={100}
-              className="w-20 rounded bg-slate-800 px-2 py-1 text-slate-100"
+              className="w-24 rounded bg-slate-800 px-2 py-1 text-slate-100"
               value={runtimeState.timeLimitMs}
               onChange={(event) =>
                 onTimeLimitChange(Number(event.target.value || 3000))
@@ -146,7 +146,7 @@ export function CodeEditorPanel({
 
           <button
             type="button"
-            className="rounded bg-emerald-600 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
+            className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
             onClick={onRun}
             disabled={isRunning}
           >
@@ -155,7 +155,7 @@ export function CodeEditorPanel({
 
           <button
             type="button"
-            className="rounded bg-amber-700 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
+            className="rounded bg-amber-700 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
             onClick={onStop}
             disabled={!isRunning}
           >
@@ -164,7 +164,7 @@ export function CodeEditorPanel({
 
           <button
             type="button"
-            className="rounded bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-100"
+            className="rounded bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100"
             onClick={onResetTimeline}
           >
             Reset

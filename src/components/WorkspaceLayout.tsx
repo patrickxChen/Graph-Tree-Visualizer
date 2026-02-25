@@ -21,7 +21,7 @@ export function WorkspaceLayout({ leftPane, rightPane }: WorkspaceLayoutProps) {
         </span>
       </header>
 
-      <section className="grid min-h-0 flex-1 grid-cols-1 gap-3 p-3 lg:grid-cols-2">
+      <section className="grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 xl:grid-cols-[minmax(480px,1fr)_minmax(620px,1.35fr)]">
         <div className="min-h-0 rounded-lg border border-slate-700 bg-slate-950">
           {leftPane}
         </div>

@@ -49,7 +49,7 @@ export function GraphEditorControls({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col border-r border-slate-700 bg-slate-950/70 p-3 text-xs text-slate-200">
+    <div className="flex h-full min-h-0 flex-col bg-slate-950/70 p-3 text-xs text-slate-200">
       <h3 className="mb-2 text-sm font-semibold">Graph/Tree Controls</h3>
 
       <div className="grid grid-cols-2 gap-2">
