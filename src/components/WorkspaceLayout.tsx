@@ -10,7 +10,7 @@ export function WorkspaceLayout({ leftPane, rightPane }: WorkspaceLayoutProps) {
     <main className="flex h-screen w-full flex-col bg-slate-900 text-slate-200">
       <header className="flex h-14 items-center border-b border-slate-700 px-4">
         <h1 className="text-sm font-semibold tracking-wide">
-          Graph/Tree Algorithm Visualizer
+          AlgoVisuals
         </h1>
       </header>
 

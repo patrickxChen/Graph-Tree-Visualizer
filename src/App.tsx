@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CodeEditorPanel } from './components/CodeEditorPanel'
-import { GraphCanvasPlaceholderPanel } from './components/GraphCanvasPlaceholderPanel'
+import { GraphEditorPanel } from './features/graph-editor'
 import { WorkspaceLayout } from './components/WorkspaceLayout'
 
 function App() {
@@ -29,7 +29,7 @@ dfs(graph.getRoot(), graph);`,
           onCodeChange={setAlgorithmCode}
         />
       }
-      rightPane={<GraphCanvasPlaceholderPanel />}
+      rightPane={<GraphEditorPanel />}
     />
   )
 }
