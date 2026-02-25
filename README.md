@@ -1,73 +1,53 @@
-# React + TypeScript + Vite
+# AlgoLize
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AlgoLize is a graph/tree algorithm visualizer I built to make traversal logic easier to understand step-by-step.
 
-Currently, two official plugins are available:
+The app combines:
+- a code editor for writing algorithms,
+- an interactive graph/tree canvas,
+- and a runtime playback + inspector panel to replay execution events.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## What I built so far
 
-## React Compiler
+### Phase 1 — Graph/Tree Editor
+- Add/delete nodes by interacting with the canvas and controls.
+- Add/delete edges.
+- Toggle directed/undirected edges.
+- Switch between graph and tree mode.
+- Select a root node in tree mode.
+- Persist graph state in localStorage.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Phase 2 — Runtime Bridge
+- Execute user algorithm code in an isolated Web Worker.
+- Provide a restricted runtime API (`graph`, `visit`, `highlightEdge`, `logEvent`).
+- Add execution controls (`Execute`, `Cancel`, `Reset`) and timeout handling.
+- Stream runtime events into an in-memory timeline.
 
-## Expanding the ESLint configuration
+### Phase 3 — Visual Playback + Inspector
+- Add timeline playback controls (`Run`, `Pause`, `Step`, `Reset`).
+- Sync canvas highlighting to the current step (active node + edge).
+- Add call frame inspector with locals (via `pushFrame`, `setLocals`, `popFrame`).
+- Add step-synced event log.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech stack
+- React + TypeScript + Vite
+- Tailwind CSS
+- Monaco Editor (`@monaco-editor/react`)
+- Web Worker sandbox for runtime execution
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Run locally
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Build for production:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
 ```
+
+## Project goal
+
+I’m building AlgoLize as an MVP focused on clarity and interactive learning for graph/tree algorithms (starting with DFS/BFS-style workflows and runtime introspection).
