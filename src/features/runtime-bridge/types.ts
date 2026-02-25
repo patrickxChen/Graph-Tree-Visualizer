@@ -1,6 +1,15 @@
 import type { GraphEditorState } from '../graph-editor/types'
 
-export type RuntimeEventType = 'visit' | 'highlight-edge' | 'log' | 'system'
+export type RuntimeEventType =
+  | 'visit'
+  | 'highlight-edge'
+  | 'log'
+  | 'system'
+  | 'frame-enter'
+  | 'frame-exit'
+  | 'locals-update'
+
+export type RuntimeLocals = Record<string, string>
 
 export type RuntimeEvent = {
   id: string
@@ -10,6 +19,15 @@ export type RuntimeEvent = {
   nodeId?: string
   sourceId?: string
   targetId?: string
+  frameId?: string
+  frameName?: string
+  locals?: RuntimeLocals
+}
+
+export type RuntimeCallFrame = {
+  id: string
+  name: string
+  locals: RuntimeLocals
 }
 
 export type RuntimeStatus =

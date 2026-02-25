@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { GraphEditorState } from '../graph-editor/types'
 import { runtimeWorkerScript } from './runtimeWorkerScript'
 import type {
@@ -24,6 +24,9 @@ export function useRuntimeBridge() {
   const { state, dispatch } = useRuntimeTimelineStore()
   const workerRef = useRef<Worker | null>(null)
   const timeoutRef = useRef<number | null>(null)
+  const playbackTimerRef = useRef<number | null>(null)
+  const [currentStepIndex, setCurrentStepIndex] = useState(-1)
+  const [isPlaybackRunning, setIsPlaybackRunning] = useState(false)
 
   const cleanupExecution = () => {
     if (workerRef.current) {
@@ -34,6 +37,15 @@ export function useRuntimeBridge() {
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current)
       timeoutRef.current = null
+    }
+  }
+
+  const stopPlayback = () => {
+    setIsPlaybackRunning(false)
+
+    if (playbackTimerRef.current) {
+      window.clearInterval(playbackTimerRef.current)
+      playbackTimerRef.current = null
     }
   }
 
@@ -56,6 +68,8 @@ export function useRuntimeBridge() {
 
   const execute = ({ code, graph }: RuntimeExecutionRequest) => {
     cleanupExecution()
+    stopPlayback()
+    setCurrentStepIndex(-1)
 
     dispatch({ type: 'reset' })
     dispatch({ type: 'setStatus', status: 'running' })
@@ -122,7 +136,35 @@ export function useRuntimeBridge() {
 
   const resetTimeline = () => {
     cleanupExecution()
+    stopPlayback()
+    setCurrentStepIndex(-1)
     dispatch({ type: 'reset' })
+  }
+
+  const runPlayback = () => {
+    if (state.events.length === 0) {
+      return
+    }
+
+    setIsPlaybackRunning(true)
+  }
+
+  const pausePlayback = () => {
+    stopPlayback()
+  }
+
+  const stepPlayback = () => {
+    if (state.events.length === 0) {
+      return
+    }
+
+    stopPlayback()
+    setCurrentStepIndex((prev) => Math.min(prev + 1, state.events.length - 1))
+  }
+
+  const resetPlayback = () => {
+    stopPlayback()
+    setCurrentStepIndex(-1)
   }
 
   const setTimeLimitMs = (next: number) => {
@@ -137,9 +179,55 @@ export function useRuntimeBridge() {
     () => ({
       isRunning: state.status === 'running',
       latestEvent: state.events[state.events.length - 1],
+      currentStepIndex,
+      currentEvent:
+        currentStepIndex >= 0 ? state.events[currentStepIndex] : undefined,
+      syncedEvents:
+        currentStepIndex >= 0 ? state.events.slice(0, currentStepIndex + 1) : [],
+      isPlaybackRunning,
     }),
-    [state.events, state.status],
+    [currentStepIndex, isPlaybackRunning, state.events, state.status],
   )
+
+  useEffect(() => {
+    if (!isPlaybackRunning) {
+      return
+    }
+
+    playbackTimerRef.current = window.setInterval(() => {
+      setCurrentStepIndex((prev) => {
+        if (state.events.length === 0) {
+          return -1
+        }
+
+        if (prev >= state.events.length - 1) {
+          if (state.status !== 'running') {
+            stopPlayback()
+          }
+
+          return prev
+        }
+
+        return prev + 1
+      })
+    }, 450)
+
+    return () => {
+      if (playbackTimerRef.current) {
+        window.clearInterval(playbackTimerRef.current)
+        playbackTimerRef.current = null
+      }
+    }
+  }, [isPlaybackRunning, state.events.length, state.status])
+
+  useEffect(() => {
+    if (state.events.length === 0) {
+      setCurrentStepIndex(-1)
+      return
+    }
+
+    setCurrentStepIndex((prev) => Math.min(prev, state.events.length - 1))
+  }, [state.events.length])
 
   return {
     state,
@@ -147,6 +235,10 @@ export function useRuntimeBridge() {
     stop,
     resetTimeline,
     setTimeLimitMs,
+    runPlayback,
+    pausePlayback,
+    stepPlayback,
+    resetPlayback,
     ...derived,
   }
 }

@@ -61,7 +61,7 @@ export function CodeEditorPanel({
             onClick={onRun}
             disabled={isRunning}
           >
-            Run
+            Execute
           </button>
 
           <button
@@ -70,7 +70,7 @@ export function CodeEditorPanel({
             onClick={onStop}
             disabled={!isRunning}
           >
-            Stop
+            Cancel
           </button>
 
           <button
@@ -83,7 +83,18 @@ export function CodeEditorPanel({
         </div>
       </div>
 
-      <div className="min-h-0 flex-[3]">
+      <div className="border-b border-slate-700 px-3 py-2 text-xs">
+        <p className={`${statusColorMap[runtimeState.status]} font-semibold`}>
+          Runtime: {runtimeState.status}
+        </p>
+        {runtimeState.error ? (
+          <p className="mt-1 rounded bg-rose-900/40 px-2 py-1 text-xs text-rose-300">
+            {runtimeState.error}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="min-h-0 flex-1">
         <Editor
           height="100%"
           defaultLanguage="javascript"
@@ -97,33 +108,6 @@ export function CodeEditorPanel({
             smoothScrolling: true,
           }}
         />
-      </div>
-
-      <div className="min-h-0 flex-[1] border-t border-slate-700 p-3">
-        <div className="mb-2 flex items-center justify-between text-xs">
-          <p className={`${statusColorMap[runtimeState.status]} font-semibold`}>
-            Status: {runtimeState.status}
-          </p>
-          <p className="text-slate-400">Events: {runtimeState.events.length}</p>
-        </div>
-
-        {runtimeState.error ? (
-          <p className="mb-2 rounded bg-rose-900/40 px-2 py-1 text-xs text-rose-300">
-            {runtimeState.error}
-          </p>
-        ) : null}
-
-        <div className="h-full max-h-32 overflow-auto rounded border border-slate-700 bg-slate-900/60 p-2 text-xs text-slate-300">
-          {runtimeState.events.length === 0 ? (
-            <p className="text-slate-500">No runtime events yet.</p>
-          ) : (
-            runtimeState.events.map((event) => (
-              <p key={event.id} className="mb-1">
-                [{event.type}] {event.message}
-              </p>
-            ))
-          )}
-        </div>
       </div>
     </section>
   )

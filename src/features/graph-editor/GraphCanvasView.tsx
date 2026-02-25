@@ -6,6 +6,8 @@ type GraphCanvasViewProps = {
   edges: EditorEdge[]
   rootNodeId?: string
   selectedNodeId?: string
+  highlightedNodeId?: string
+  highlightedEdge?: { sourceId: string; targetId: string }
   directedEdges: boolean
   onCanvasClick: (x: number, y: number) => void
   onNodeClick: (nodeId: string) => void
@@ -19,6 +21,8 @@ export function GraphCanvasView({
   edges,
   rootNodeId,
   selectedNodeId,
+  highlightedNodeId,
+  highlightedEdge,
   directedEdges,
   onCanvasClick,
   onNodeClick,
@@ -59,6 +63,9 @@ export function GraphCanvasView({
       {edges.map((edge) => {
         const source = nodes.find((node) => node.id === edge.source)
         const target = nodes.find((node) => node.id === edge.target)
+        const isHighlighted =
+          highlightedEdge?.sourceId === edge.source &&
+          highlightedEdge?.targetId === edge.target
 
         if (!source || !target) {
           return null
@@ -71,8 +78,8 @@ export function GraphCanvasView({
             y1={source.y}
             x2={target.x}
             y2={target.y}
-            stroke="#94a3b8"
-            strokeWidth="2.5"
+            stroke={isHighlighted ? '#22d3ee' : '#94a3b8'}
+            strokeWidth={isHighlighted ? '4' : '2.5'}
             markerEnd={directedEdges ? 'url(#arrowhead)' : undefined}
           />
         )
@@ -81,6 +88,7 @@ export function GraphCanvasView({
       {nodes.map((node) => {
         const isSelected = node.id === selectedNodeId
         const isRoot = node.id === rootNodeId
+        const isHighlighted = node.id === highlightedNodeId
 
         return (
           <g
@@ -91,8 +99,14 @@ export function GraphCanvasView({
             <circle
               cx={node.x}
               cy={node.y}
-              r={isSelected ? 26 : 22}
-              fill={isSelected ? '#38bdf8' : '#334155'}
+              r={isSelected || isHighlighted ? 26 : 22}
+              fill={
+                isSelected
+                  ? '#38bdf8'
+                  : isHighlighted
+                    ? '#0f766e'
+                    : '#334155'
+              }
               stroke={isRoot ? '#f59e0b' : '#e2e8f0'}
               strokeWidth={isRoot ? 3 : 2}
             />

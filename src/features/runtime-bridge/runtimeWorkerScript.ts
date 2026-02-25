@@ -1,5 +1,6 @@
 export const runtimeWorkerScript = String.raw`
 let eventCounter = 0;
+let frameCounter = 0;
 
 const postRuntimeEvent = (event) => {
   self.postMessage({ type: 'event', event });
@@ -52,6 +53,19 @@ const buildGraphApi = (graphPayload) => {
   };
 };
 
+const sanitizeLocals = (locals) => {
+  if (!locals || typeof locals !== 'object') {
+    return {};
+  }
+
+  const entries = Object.entries(locals).map(([key, value]) => [
+    String(key),
+    typeof value === 'string' ? value : JSON.stringify(value),
+  ]);
+
+  return Object.fromEntries(entries);
+};
+
 self.onmessage = async (messageEvent) => {
   const message = messageEvent.data;
 
@@ -61,6 +75,7 @@ self.onmessage = async (messageEvent) => {
 
   const { code, graph } = message.payload;
   const graphApi = buildGraphApi(graph);
+  const callStack = [];
 
   const visit = (nodeId) => {
     postRuntimeEvent(
@@ -81,6 +96,55 @@ self.onmessage = async (messageEvent) => {
     postRuntimeEvent(createEvent('log', String(text)));
   };
 
+  const pushFrame = (frameName, locals) => {
+    const frame = {
+      id: 'frame_' + Date.now() + '_' + frameCounter++,
+      name: String(frameName || 'anonymous'),
+      locals: sanitizeLocals(locals),
+    };
+
+    callStack.push(frame);
+    postRuntimeEvent(
+      createEvent('frame-enter', 'Entered ' + frame.name, {
+        frameId: frame.id,
+        frameName: frame.name,
+        locals: frame.locals,
+      }),
+    );
+  };
+
+  const popFrame = () => {
+    const frame = callStack.pop();
+
+    if (!frame) {
+      return;
+    }
+
+    postRuntimeEvent(
+      createEvent('frame-exit', 'Exited ' + frame.name, {
+        frameId: frame.id,
+        frameName: frame.name,
+      }),
+    );
+  };
+
+  const setLocals = (locals) => {
+    const frame = callStack[callStack.length - 1];
+
+    if (!frame) {
+      return;
+    }
+
+    frame.locals = sanitizeLocals(locals);
+    postRuntimeEvent(
+      createEvent('locals-update', 'Updated locals for ' + frame.name, {
+        frameId: frame.id,
+        frameName: frame.name,
+        locals: frame.locals,
+      }),
+    );
+  };
+
   try {
     const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
     const executable = new AsyncFunction(
@@ -88,10 +152,21 @@ self.onmessage = async (messageEvent) => {
       'visit',
       'highlightEdge',
       'logEvent',
+      'pushFrame',
+      'popFrame',
+      'setLocals',
       '\'use strict\';\\n' + code,
     );
 
-    await executable(graphApi, visit, highlightEdge, logEvent);
+    await executable(
+      graphApi,
+      visit,
+      highlightEdge,
+      logEvent,
+      pushFrame,
+      popFrame,
+      setLocals,
+    );
     self.postMessage({ type: 'completed' });
   } catch (error) {
     self.postMessage({
