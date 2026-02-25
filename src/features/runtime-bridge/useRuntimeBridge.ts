@@ -9,6 +9,24 @@ import type {
 } from './types'
 import { useRuntimeTimelineStore } from './useRuntimeTimelineStore'
 
+const normalizeRuntimeCode = (code: string) =>
+  code
+    .replace(/\u00a0/g, ' ')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+
+const buildSyntaxErrorMessage = (error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error)
+  const hints = [
+    'Check for smart quotes/dashes copied from docs.',
+    'Remove line numbers or non-code text from the editor.',
+    'Use plain JavaScript syntax only (no TypeScript annotations).',
+  ]
+
+  return [message, ...hints].join('\n')
+}
+
 const mapGraphToWorkerPayload = (graph: GraphEditorState): RuntimeWorkerGraph => ({
   nodes: graph.nodes.map((node) => ({ id: node.id, label: node.label })),
   edges: graph.edges.map((edge) => ({
@@ -71,6 +89,36 @@ export function useRuntimeBridge() {
     stopPlayback()
     setCurrentStepIndex(-1)
 
+    const preparedCode = normalizeRuntimeCode(code)
+
+    if (!preparedCode.trim()) {
+      dispatch({ type: 'reset' })
+      dispatch({ type: 'setStatus', status: 'error' })
+      dispatch({ type: 'setError', error: 'Editor code is empty.' })
+      dispatch({ type: 'markEnded', endedAt: Date.now() })
+      return
+    }
+
+    try {
+      const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
+      new AsyncFunction(
+        'graph',
+        'visit',
+        'highlightEdge',
+        'logEvent',
+        'pushFrame',
+        'popFrame',
+        'setLocals',
+        "'use strict';\n" + preparedCode,
+      )
+    } catch (error) {
+      dispatch({ type: 'reset' })
+      dispatch({ type: 'setStatus', status: 'error' })
+      dispatch({ type: 'setError', error: buildSyntaxErrorMessage(error) })
+      dispatch({ type: 'markEnded', endedAt: Date.now() })
+      return
+    }
+
     dispatch({ type: 'reset' })
     dispatch({ type: 'setStatus', status: 'running' })
     dispatch({ type: 'markStarted', startedAt: Date.now() })
@@ -122,7 +170,7 @@ export function useRuntimeBridge() {
     const message: RuntimeWorkerExecuteMessage = {
       type: 'execute',
       payload: {
-        code,
+        code: preparedCode,
         graph: mapGraphToWorkerPayload(graph),
       },
     }
