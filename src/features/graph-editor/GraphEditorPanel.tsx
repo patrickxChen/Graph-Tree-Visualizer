@@ -78,7 +78,7 @@ export function GraphEditorPanel({
             <p className="mt-1 text-xs text-slate-500">
               Runtime: {runtimeStatus} · Step {Math.max(currentStepIndex + 1, 0)} / {totalSteps}
             </p>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 grid grid-cols-2 gap-2">
               <button
                 type="button"
                 className="rounded bg-cyan-700 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"

@@ -94,16 +94,17 @@ export function CodeEditorPanel({
 
   return (
     <section className="flex h-full min-h-0 flex-col">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-700 px-3 py-3">
+      <div className="border-b border-slate-700 px-3 py-3">
         <h2 className="text-xs font-medium uppercase tracking-wide text-slate-300">
           Algorithm Editor
         </h2>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <label className="flex items-center gap-1 text-xs text-slate-400">
+        <div className="mt-2 grid gap-2 xl:grid-cols-[1fr_auto] xl:items-center">
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-1 text-xs text-slate-400">
             Template
             <select
-              className="w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
+              className="w-40 rounded bg-slate-800 px-2 py-1 text-slate-100 sm:w-44"
               value={selectedTemplateId}
               onChange={(event) => onTemplateChange(event.target.value)}
             >
@@ -115,10 +116,10 @@ export function CodeEditorPanel({
             </select>
           </label>
 
-          <label className="flex items-center gap-1 text-xs text-slate-400">
+            <label className="flex items-center gap-1 text-xs text-slate-400">
             Preset
             <select
-              className="w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
+              className="w-40 rounded bg-slate-800 px-2 py-1 text-slate-100 sm:w-44"
               value={selectedPresetId}
               onChange={(event) => onPresetChange(event.target.value)}
             >
@@ -130,7 +131,7 @@ export function CodeEditorPanel({
             </select>
           </label>
 
-          <label className="flex items-center gap-1 text-xs text-slate-400">
+            <label className="flex items-center gap-1 text-xs text-slate-400">
             Timeout
             <input
               type="number"
@@ -144,41 +145,44 @@ export function CodeEditorPanel({
               }
             />
             ms
-          </label>
+            </label>
+          </div>
 
-          <button
-            type="button"
-            className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
-            onClick={onRun}
-            disabled={isRunning}
-          >
-            Execute
-          </button>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+            <button
+              type="button"
+              className="rounded bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              onClick={onRun}
+              disabled={isRunning}
+            >
+              Execute
+            </button>
 
-          <button
-            type="button"
-            className="rounded bg-amber-700 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
-            onClick={onStop}
-            disabled={!isRunning}
-          >
-            Cancel
-          </button>
+            <button
+              type="button"
+              className="rounded bg-amber-700 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              onClick={onStop}
+              disabled={!isRunning}
+            >
+              Cancel
+            </button>
 
-          <button
-            type="button"
-            className="rounded bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100"
-            onClick={onLoadDemo}
-          >
-            Load Demo
-          </button>
+            <button
+              type="button"
+              className="rounded bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100"
+              onClick={onLoadDemo}
+            >
+              Load Demo
+            </button>
 
-          <button
-            type="button"
-            className="rounded bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100"
-            onClick={onResetTimeline}
-          >
-            Reset
-          </button>
+            <button
+              type="button"
+              className="rounded bg-slate-700 px-3 py-1.5 text-xs font-medium text-slate-100"
+              onClick={onResetTimeline}
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
 
