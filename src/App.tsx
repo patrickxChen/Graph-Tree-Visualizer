@@ -1,43 +1,69 @@
 import { useMemo, useState } from 'react'
 import { CodeEditorPanel } from './components/CodeEditorPanel'
 import { GraphEditorPanel, useGraphEditorState } from './features/graph-editor'
+import { algorithmTemplates, graphPresets } from './features/mvp-content'
 import type { RuntimeCallFrame } from './features/runtime-bridge'
 import { useRuntimeBridge } from './features/runtime-bridge'
 import { WorkspaceLayout } from './components/WorkspaceLayout'
 
 function App() {
-  const [algorithmCode, setAlgorithmCode] = useState('')
+  const [selectedTemplateId, setSelectedTemplateId] = useState('dfs')
+  const [selectedPresetId, setSelectedPresetId] = useState('undirected-small')
+  const [algorithmCode, setAlgorithmCode] = useState(
+    algorithmTemplates[0]?.code ?? '',
+  )
   const graphEditor = useGraphEditorState()
   const runtimeBridge = useRuntimeBridge()
 
-  const defaultCode = useMemo(
-    () => `function dfs(node, graph, visited = new Set()) {
-  if (!node || visited.has(node.id)) return;
+  const resolvedCode = algorithmCode
 
-  pushFrame('dfs', { node: node.id, visitedCount: visited.size });
-  visited.add(node.id);
-  setLocals({ node: node.id, visitedCount: visited.size });
-  visit(node.id);
-
-  for (const next of graph.getNeighbors(node.id)) {
-    highlightEdge(node.id, next.id);
-    dfs(next, graph, visited);
-  }
-
-  popFrame();
-}
-
-dfs(graph.getRoot(), graph);`,
+  const templateOptions = useMemo(
+    () =>
+      algorithmTemplates.map((template) => ({
+        id: template.id,
+        name: template.name,
+      })),
     [],
   )
 
-  const resolvedCode = algorithmCode || defaultCode
+  const presetOptions = useMemo(
+    () =>
+      graphPresets.map((preset) => ({
+        id: preset.id,
+        name: preset.name,
+      })),
+    [],
+  )
 
   const handleRun = () => {
     runtimeBridge.execute({
       code: resolvedCode,
       graph: graphEditor.state,
     })
+  }
+
+  const handleTemplateChange = (templateId: string) => {
+    const template = algorithmTemplates.find((item) => item.id === templateId)
+    if (!template) {
+      return
+    }
+
+    setSelectedTemplateId(templateId)
+    setAlgorithmCode(template.code)
+    runtimeBridge.resetTimeline()
+    runtimeBridge.resetPlayback()
+  }
+
+  const handlePresetChange = (presetId: string) => {
+    const preset = graphPresets.find((item) => item.id === presetId)
+    if (!preset) {
+      return
+    }
+
+    setSelectedPresetId(presetId)
+    graphEditor.actions.loadGraph(preset.graph)
+    runtimeBridge.resetTimeline()
+    runtimeBridge.resetPlayback()
   }
 
   const inspectorState = useMemo(() => {
@@ -94,6 +120,12 @@ dfs(graph.getRoot(), graph);`,
           code={resolvedCode}
           onCodeChange={setAlgorithmCode}
           runtimeState={runtimeBridge.state}
+          templateOptions={templateOptions}
+          selectedTemplateId={selectedTemplateId}
+          onTemplateChange={handleTemplateChange}
+          presetOptions={presetOptions}
+          selectedPresetId={selectedPresetId}
+          onPresetChange={handlePresetChange}
           onRun={handleRun}
           onStop={runtimeBridge.stop}
           onResetTimeline={runtimeBridge.resetTimeline}

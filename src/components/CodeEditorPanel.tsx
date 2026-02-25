@@ -1,10 +1,21 @@
 import Editor from '@monaco-editor/react'
 import type { RuntimeBridgeState } from '../features/runtime-bridge'
 
+type SelectOption = {
+  id: string
+  name: string
+}
+
 type CodeEditorPanelProps = {
   code: string
   onCodeChange: (value: string) => void
   runtimeState: RuntimeBridgeState
+  templateOptions: SelectOption[]
+  selectedTemplateId: string
+  onTemplateChange: (templateId: string) => void
+  presetOptions: SelectOption[]
+  selectedPresetId: string
+  onPresetChange: (presetId: string) => void
   onRun: () => void
   onStop: () => void
   onResetTimeline: () => void
@@ -24,6 +35,12 @@ export function CodeEditorPanel({
   code,
   onCodeChange,
   runtimeState,
+  templateOptions,
+  selectedTemplateId,
+  onTemplateChange,
+  presetOptions,
+  selectedPresetId,
+  onPresetChange,
   onRun,
   onStop,
   onResetTimeline,
@@ -39,6 +56,36 @@ export function CodeEditorPanel({
         </h2>
 
         <div className="flex items-center gap-2">
+          <label className="flex items-center gap-1 text-xs text-slate-400">
+            Template
+            <select
+              className="max-w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
+              value={selectedTemplateId}
+              onChange={(event) => onTemplateChange(event.target.value)}
+            >
+              {templateOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex items-center gap-1 text-xs text-slate-400">
+            Preset
+            <select
+              className="max-w-44 rounded bg-slate-800 px-2 py-1 text-slate-100"
+              value={selectedPresetId}
+              onChange={(event) => onPresetChange(event.target.value)}
+            >
+              {presetOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <label className="flex items-center gap-1 text-xs text-slate-400">
             Timeout
             <input

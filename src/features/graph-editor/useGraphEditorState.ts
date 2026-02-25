@@ -56,6 +56,7 @@ const reviveState = (): GraphEditorState => {
 export type GraphEditorActions = {
   setMode: (mode: GraphMode) => void
   setDirectedEdges: (directed: boolean) => void
+  loadGraph: (nextGraph: GraphEditorState) => void
   addNode: (x: number, y: number) => void
   selectNode: (nodeId?: string) => void
   updateNodeLabel: (nodeId: string, label: string) => void
@@ -113,6 +114,17 @@ export function useGraphEditorState(): UseGraphEditorStateResult {
       directedEdges: directed,
       edges: prev.edges.map((edge) => ({ ...edge, directed })),
     }))
+  }
+
+  const loadGraph = (nextGraph: GraphEditorState) => {
+    setState({
+      ...nextGraph,
+      selectedNodeId: nextGraph.selectedNodeId ?? nextGraph.nodes[0]?.id,
+      rootNodeId:
+        nextGraph.mode === 'tree'
+          ? nextGraph.rootNodeId ?? nextGraph.nodes[0]?.id
+          : undefined,
+    })
   }
 
   const addNode = (x: number, y: number) => {
@@ -222,6 +234,7 @@ export function useGraphEditorState(): UseGraphEditorStateResult {
     actions: {
       setMode,
       setDirectedEdges,
+      loadGraph,
       addNode,
       selectNode,
       updateNodeLabel,
