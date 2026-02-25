@@ -118,7 +118,7 @@ export function GraphEditorPanel({
             <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
               Call Frames
             </p>
-            <div className="mt-2 max-h-28 overflow-auto rounded border border-slate-700 bg-slate-900/60 p-2 text-xs text-slate-200">
+            <div className="mt-2 h-28 overflow-auto rounded border border-slate-700 bg-slate-900/60 p-2 text-xs text-slate-200">
               {callFrames.length === 0 ? (
                 <p className="text-slate-500">No active frames for this step.</p>
               ) : (
@@ -144,7 +144,7 @@ export function GraphEditorPanel({
             <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
               Event Log (Synced)
             </p>
-            <div className="mt-2 max-h-32 overflow-auto rounded border border-slate-700 bg-slate-900/60 p-2 text-xs text-slate-300">
+            <div className="mt-2 h-36 overflow-auto rounded border border-slate-700 bg-slate-900/60 p-2 text-xs text-slate-300">
               {syncedEvents.length === 0 ? (
                 <p className="text-slate-500">No events at current step.</p>
               ) : (

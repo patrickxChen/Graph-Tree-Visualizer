@@ -155,7 +155,7 @@ self.onmessage = async (messageEvent) => {
       'pushFrame',
       'popFrame',
       'setLocals',
-      '\'use strict\';\\n' + code,
+      "'use strict';\n" + code,
     );
 
     await executable(
